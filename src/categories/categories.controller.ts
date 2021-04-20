@@ -69,6 +69,7 @@ export class CategoriesController {
         return this.categoryService.updateCategory(id, createCategoryDto);
     }
 
+    @ApiOperation({ description: 'Chỉ xóa được phần tử đó khi phần từ đó không có con' })
     @Delete('/:id')
     deleteCategory(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.categoryService.deleteCategory(id);

@@ -1,5 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
-import { HttpErrorByCode } from "@nestjs/common/utils/http-error-by-code.util";
+import { HttpException, HttpStatus } from "@nestjs/common";
 import { EntityRepository, TreeRepository } from "typeorm"
 import { CreateCategoryDto } from "../dto/create-category.dto"
 import { Category } from "../entities/category.entity"
