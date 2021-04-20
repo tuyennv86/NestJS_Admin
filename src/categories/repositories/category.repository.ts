@@ -1,4 +1,5 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, NotFoundException } from "@nestjs/common";
+import { HttpErrorByCode } from "@nestjs/common/utils/http-error-by-code.util";
 import { EntityRepository, TreeRepository } from "typeorm"
 import { CreateCategoryDto } from "../dto/create-category.dto"
 import { Category } from "../entities/category.entity"
@@ -64,13 +65,13 @@ export class CategoryRepository extends TreeRepository<Category> {
             })
 
             //xoa parentOld
-            // listParentOld.forEach(item => {
-            //     try {
-            //         this.query(`DELETE FROM category_closure where id_ancestor = ${item.id} and id_descendant = ${id}`);
-            //     } catch (error) {
-            //         //throw new BadRequestException(JSON.stringify(error));
-            //     }
-            // });
+            listParentOld.forEach(item => {
+                try {
+                    this.query(`DELETE FROM category_closure where id_ancestor = ${item.id} and id_descendant = ${id}`);
+                } catch (error) {
+                    throw new HttpException(`Lỗi ${error}`, HttpStatus.NOT_MODIFIED);
+                }
+            });
 
         }
 
@@ -99,9 +100,7 @@ export class CategoryRepository extends TreeRepository<Category> {
         const category = await this.findOne(id);
         const categoryChild = await this.findDescendantsTree(category);
         if (categoryChild.children.length > 0) {
-            console.log(categoryChild.children.length);
-
-            throw new NotFoundException(`Bạn không thể xóa danh mục có id là "${id}"! Vì có con bạn cần phải xóa các con trước`);
+            throw new HttpException(`Bạn không thể xóa danh mục : ${category.name}! Hãy xóa hết các con trước.`, HttpStatus.NOT_MODIFIED);
         }
         //xoa bang closure
         await this.query(`delete from category_closure where id_descendant = ${id}`);
