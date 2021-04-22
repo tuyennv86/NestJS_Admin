@@ -1,6 +1,5 @@
 import { IsDate } from "class-validator";
-import { User } from "../../auth/entities/user.entity";
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
 
 @Entity()
 @Tree("closure-table")
@@ -15,6 +14,12 @@ export class Category extends BaseEntity {
     @Column({ length: 256 })
     name: string;
 
+    @Column({ length: 256 })
+    title: string;
+
+    @Column()
+    pageSize: number;
+
     @TreeChildren()
     children: Category[];
 
@@ -27,14 +32,8 @@ export class Category extends BaseEntity {
     @Column()
     order: number;
 
-    @Column({ length: 256 })
-    title: string;
-
     @Column()
     isPublished: boolean;
-
-    @ManyToOne(type => User, user => user.tasks, { eager: false })
-    user: User;
 
     @Column()
     userId: number;
