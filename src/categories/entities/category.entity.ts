@@ -41,6 +41,4 @@ export class Category extends BaseEntity {
     @CreateDateColumn()
     @IsDate()
     createDate: Date;
-
-
 }

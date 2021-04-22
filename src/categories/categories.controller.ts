@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Patch, Post, Put } from '@nestjs/common';
-import { HttpErrorByCode } from '@nestjs/common/utils/http-error-by-code.util';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Category } from './entities/category.entity';
@@ -63,7 +62,7 @@ export class CategoriesController {
     @Put('/:id')
     updateCategory(@Param('id', ParseIntPipe) id: number, @Body() createCategoryDto: CreateCategoryDto): Promise<Category> {
         if (id === createCategoryDto.parentId) {
-            throw new HttpException(`id ${id} bị trùng với cha parentId ${createCategoryDto.parentId}`, HttpStatus.CONFLICT);
+            throw new HttpException(`id ${id} bị trùng với cha parentId ${createCategoryDto.parentId}`, HttpStatus.BAD_REQUEST);
         }
         //this.logger.verbose(`Update theo id ${id} với danh sách dto ${JSON.stringify(createCategoryDto)}`)
         return this.categoryService.updateCategory(id, createCategoryDto);

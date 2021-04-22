@@ -21,9 +21,6 @@ export class User extends BaseEntity {
     @OneToMany(type => Task, task => task.user, { eager: false })
     tasks: Task[];
 
-    @OneToMany(type => Category, category => category.user, { eager: false })
-    categories: Category[]
-
     async validatePassword(password: string): Promise<boolean> {
         const hash = await bcrypt.hash(password, this.satl);
         return hash === this.password;
