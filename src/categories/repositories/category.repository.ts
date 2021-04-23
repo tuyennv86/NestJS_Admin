@@ -68,7 +68,7 @@ export class CategoryRepository extends TreeRepository<Category> {
                 try {
                     this.query(`DELETE FROM category_closure where id_ancestor = ${item.id} and id_descendant = ${id}`);
                 } catch (error) {
-                    throw new HttpException(`Lỗi ${error}`, HttpStatus.BAD_REQUEST);
+                    throw new HttpException(`Lỗi ${error}`, HttpStatus.NOT_ACCEPTABLE);
                 }
             });
 
@@ -99,7 +99,7 @@ export class CategoryRepository extends TreeRepository<Category> {
         const category = await this.findOne(id);
         const categoryChild = await this.findDescendantsTree(category);
         if (categoryChild.children.length > 0) {
-            throw new HttpException(`Bạn không thể xóa danh mục : ${category.name}! Hãy xóa hết các con trước.`, HttpStatus.BAD_REQUEST);
+            throw new HttpException(`Bạn không thể xóa danh mục : ${category.name}! Hãy xóa hết các con trước.`, HttpStatus.NOT_ACCEPTABLE);
         }
         //xoa bang closure
         await this.query(`delete from category_closure where id_descendant = ${id}`);

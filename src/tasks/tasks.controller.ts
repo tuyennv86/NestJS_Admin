@@ -8,11 +8,11 @@ import { GetTaskFilterDto } from './dto/get-task-filter.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '../auth/entities/user.entity';
 import { GetUser } from '../auth/jwt/get-user.decorater';
-import { ApiBasicAuth, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 @ApiTags("Tasks")
 @Controller('tasks')
-@ApiBasicAuth()
+@ApiBearerAuth()
 @UseGuards(AuthGuard())
 export class TasksController {
     private logger = new Logger('TasksController');
@@ -23,6 +23,7 @@ export class TasksController {
         this.logger.verbose(`Lay danh theo user : ${user.username} . Tieu chi tim :${JSON.stringify(filterDto)}`);
         return await this.taskService.getAllTasks(filterDto, user);
     }
+
 
     @Get('/:id')// lay theo id
     async getTaskById(@Param('id', ParseIntPipe) id: number, @GetUser() user: User): Promise<Task> {
