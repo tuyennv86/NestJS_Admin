@@ -25,16 +25,17 @@ export class ContactService {
     }
 
     async getContactById(id: number): Promise<Contact> {
-        let found;
-        found = await this.cacheManager.get("contact_getby_" + id);
-        if (!found) {
-            found = await this.contactRepository.findOne(id);
-            await this.cacheManager.set("contact_getby_" + id, found);
-            if (!found) {
-                throw new NotFoundException(`Không tìm thấy id "${id}" của bạn`);
-            }
-        }
-        return found;
+        // let found;
+        // found = await this.cacheManager.get("contact_getby_" + id);
+        // if (!found) {
+        //     found = await this.contactRepository.findOne(id);
+        //     await this.cacheManager.set("contact_getby_" + id, found);
+        //     if (!found) {
+        //         throw new NotFoundException(`Không tìm thấy id "${id}" của bạn`);
+        //     }
+        // }
+        // return found;
+        return await this.contactRepository.findOne(id);
     }
 
     async createContact(createContactDto: CreateContactDto): Promise<Contact> {

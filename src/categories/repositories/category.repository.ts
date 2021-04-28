@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
+import { CategoryType, IsPublic } from "../../common/enum/Identifier.enum";
 import { EntityRepository, TreeRepository } from "typeorm"
 import { CreateCategoryDto } from "../dto/create-category.dto"
 import { Category } from "../entities/category.entity"
@@ -6,14 +7,16 @@ import { Category } from "../entities/category.entity"
 @EntityRepository(Category)
 export class CategoryRepository extends TreeRepository<Category> {
 
-    async createCategory(createCategoryDto: CreateCategoryDto): Promise<Category> {
+    async createCategory(createCategoryDto: CreateCategoryDto, isPublic: IsPublic, categoryType: CategoryType): Promise<Category> {
         const categoryParent = await this.findOne(createCategoryDto.parentId);
         const category = new Category();
         category.name = createCategoryDto.name;
         category.title = createCategoryDto.title;
-        category.isPublished = createCategoryDto.isPublished;
+        category.pageSize = createCategoryDto.pageSize;
+        category.typeCode = categoryType;
+        category.isPublished = isPublic;
         category.order = createCategoryDto.order;
-        category.userId = createCategoryDto.userId;
+        category.userIdCreate = createCategoryDto.userIdCreate;
         category.createDate = createCategoryDto.createDate;
         if (categoryParent) {
             category.parent = categoryParent;
@@ -22,7 +25,7 @@ export class CategoryRepository extends TreeRepository<Category> {
         return category;
     }
 
-    async updateCategory(id: number, createCategoryDto: CreateCategoryDto): Promise<Category> {
+    async updateCategory(id: number, createCategoryDto: CreateCategoryDto, isPublic: IsPublic, categoryType: CategoryType): Promise<Category> {
 
         const category = await this.findOne(id);
         const categoryParent = await this.findOne(createCategoryDto.parentId);
@@ -36,9 +39,11 @@ export class CategoryRepository extends TreeRepository<Category> {
 
         category.name = createCategoryDto.name;
         category.title = createCategoryDto.title;
-        category.isPublished = createCategoryDto.isPublished;
+        category.pageSize = createCategoryDto.pageSize;
+        category.typeCode = categoryType;
+        category.isPublished = isPublic
         category.order = createCategoryDto.order;
-        category.userId = createCategoryDto.userId;
+        category.userIdCreate = createCategoryDto.userIdCreate;
         category.createDate = createCategoryDto.createDate;
         if (categoryParent) {
             category.parent = categoryParent;
@@ -76,10 +81,12 @@ export class CategoryRepository extends TreeRepository<Category> {
 
         return category;
     }
+
     async getChildrenNext(idParent: number): Promise<Category[]> {
         const parentCategory = await this.findOne(idParent);
         return await this.findDescendants(parentCategory);
     }
+
     async getChildrenNextTree(idParent: number): Promise<Category> {
         const parentCategory = await this.findOne(idParent);
         return await this.findDescendantsTree(parentCategory);
@@ -105,4 +112,12 @@ export class CategoryRepository extends TreeRepository<Category> {
         await this.query(`delete from category_closure where id_descendant = ${id}`);
         await this.delete(id);
     }
+
+    // async getAllChildByTypeAndPublic(id: number, categoryType: CategoryType, isPublic: IsPublic): Promise<Category[]> {
+    //     const category = await this.findOne(id);
+    //     return await this.createDescendantsQueryBuilder("category", "categoryClosure", category)
+    //         .andWhere("category.typeCode = :categoryType", { categoryType: categoryType })
+    //         .andWhere("category.isPublished = :isPublished", { isPublished: isPublic })
+    //         .getMany();
+    // }
 }

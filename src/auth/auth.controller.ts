@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './entities/user.entity';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @ApiTags("Authentication")
 @Controller('auth')
@@ -25,6 +26,7 @@ export class AuthController {
 
     @Get('/profile')
     @UseGuards(AuthGuard())
+    //@UseGuards(RolesGuard)
     public async testAuth(@Req() req): Promise<User> {
         return req.user;
     }

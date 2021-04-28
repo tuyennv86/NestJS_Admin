@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, Min } from "class-validator";
+import { IsDate, IsIn, IsNotEmpty, IsNumber, Min } from "class-validator";
+import { CategoryType } from "src/common/enum/Identifier.enum";
 
 export class CreateCategoryDto {
     @ApiProperty()
@@ -25,14 +26,9 @@ export class CreateCategoryDto {
     pageSize: number;
 
     @ApiProperty()
-    @IsBoolean()
-    @IsNotEmpty()
-    isPublished: boolean;
-
-    @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
-    userId: number;
+    userIdCreate: number;
 
     @ApiProperty()
     @IsDate()

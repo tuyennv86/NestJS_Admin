@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put, Query, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Contact } from './entities/contact.entity';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { PaginatedContactsResultDto } from './dto/paginated-contacts-result.dto';
 import { PaginationDto } from './dto/pagination.dto';
+import { HttpExceptionsFilter } from 'src/common/filters/http-exception.filter';
 
 @ApiTags("Contacts")
 @Controller('contacts')
+// @UseFilters(HttpExceptionsFilter)
 export class ContactController {
     private logger = new Logger('TasksController');
     constructor(private contactService: ContactService) { }
@@ -29,20 +31,25 @@ export class ContactController {
 
     @Get('/:id')
     getContactById(@Param('id', ParseIntPipe) id: number): Promise<Contact> {
+        // const found = this.contactService.getContactById(id);
+        // if (!found) {
+        //     throw new HttpException(`id ${id} không tồn tại`, HttpStatus.NOT_FOUND);
+        // }
+        // return found;
         return this.contactService.getContactById(id);
     }
 
     @Post()
     @UsePipes(ValidationPipe)
     createContact(@Body() createContactDto: CreateContactDto): Promise<Contact> {
-        this.logger.verbose(`Thêm mới contact :${JSON.stringify(createContactDto)}`);
+        //this.logger.verbose(`Thêm mới contact :${JSON.stringify(createContactDto)}`);
         return this.contactService.createContact(createContactDto);
     }
 
     @Put('/:id')
     @UsePipes(ValidationPipe)
     updateContact(@Param('id', ParseIntPipe) id: number, @Body() createContactDto: CreateContactDto): Promise<Contact> {
-        this.logger.verbose(`Update contact theo Id: ${id} chi tiết :${JSON.stringify(createContactDto)}`);
+        //this.logger.verbose(`Update contact theo Id: ${id} chi tiết :${JSON.stringify(createContactDto)}`);
         return this.contactService.updateContact(id, createContactDto);
     }
 

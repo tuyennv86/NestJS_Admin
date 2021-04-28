@@ -1,10 +1,10 @@
 import { IsDate } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
+import { CategoryType, IsPublic } from "../../common/enum/Identifier.enum";
+import { Product } from "../../products/entities/product.entity";
+import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Tree, TreeChildren, TreeParent } from "typeorm";
 
 @Entity()
 @Tree("closure-table")
-//@Tree("materialized-path")
-//@Tree("nested-set")
 
 export class Category extends BaseEntity {
 
@@ -20,6 +20,9 @@ export class Category extends BaseEntity {
     @Column()
     pageSize: number;
 
+    @Column()
+    typeCode: CategoryType
+
     @TreeChildren()
     children: Category[];
 
@@ -33,12 +36,15 @@ export class Category extends BaseEntity {
     order: number;
 
     @Column()
-    isPublished: boolean;
+    isPublished: IsPublic;
 
     @Column()
-    userId: number;
+    userIdCreate: number;
 
     @CreateDateColumn()
     @IsDate()
     createDate: Date;
+
+    @OneToMany(type => Product, product => product.category, { eager: false })
+    products: Product[]
 }

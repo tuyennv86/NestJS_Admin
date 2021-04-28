@@ -1,5 +1,8 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Patch, Post, Put } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CategoryType, IsPublic } from 'src/common/enum/Identifier.enum';
+import { CategoryTypevalidationPipe } from 'src/common/pipes/category-type-validation.pipe';
+import { IspublicValidationPipe } from 'src/common/pipes/ispublic-validation.pipe';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Category } from './entities/category.entity';
@@ -54,18 +57,26 @@ export class CategoriesController {
     }
 
     @Post()
-    createCategory(@Body() createCategoryDto: CreateCategoryDto): Promise<Category> {
+    createCategory(@Body() createCategoryDto: CreateCategoryDto,
+        @Body('public', IspublicValidationPipe) isPublic: IsPublic,
+        @Body('typecode', CategoryTypevalidationPipe) typeCode: CategoryType): Promise<Category> {
+
         this.logger.verbose(`danh sách dto ${JSON.stringify(createCategoryDto)}`)
-        return this.categoryService.createCategory(createCategoryDto);
+        return this.categoryService.createCategory(createCategoryDto, isPublic, typeCode);
+
     }
 
     @Put('/:id')
-    updateCategory(@Param('id', ParseIntPipe) id: number, @Body() createCategoryDto: CreateCategoryDto): Promise<Category> {
+    updateCategory(@Param('id', ParseIntPipe) id: number,
+        @Body() createCategoryDto: CreateCategoryDto,
+        @Body('public', IspublicValidationPipe) isPublic: IsPublic,
+        @Body('typecode', CategoryTypevalidationPipe) typeCode: CategoryType): Promise<Category> {
+
         if (id === createCategoryDto.parentId) {
-            throw new HttpException(`id ${id} bị trùng với cha parentId ${createCategoryDto.parentId}`, HttpStatus.BAD_REQUEST);
+            throw new HttpException(`id ${id} bị trùng với cha parentId ${createCategoryDto.parentId}`, HttpStatus.EXPECTATION_FAILED);
         }
         //this.logger.verbose(`Update theo id ${id} với danh sách dto ${JSON.stringify(createCategoryDto)}`)
-        return this.categoryService.updateCategory(id, createCategoryDto);
+        return this.categoryService.updateCategory(id, createCategoryDto, isPublic, typeCode);
     }
 
     @ApiOperation({ description: 'Chỉ xóa được phần tử đó khi phần từ đó không có con' })
