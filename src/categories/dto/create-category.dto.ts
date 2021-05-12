@@ -26,11 +26,6 @@ export class CreateCategoryDto {
     pageSize: number;
 
     @ApiProperty()
-    @IsNotEmpty()
-    @IsNumber()
-    userIdCreate: number;
-
-    @ApiProperty()
     @IsDate()
     createDate: Date;
 }

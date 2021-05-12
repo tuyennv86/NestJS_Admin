@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsString, MinLength, MaxLength, Matches, IsEmail } from "class-validator";
 
-export class AuthCredentialsDto {
+export class AuthsigninDto {
     @ApiProperty({
         description: 'Tên đăng nhập có độ dài từ 4 - 20 ký tự',
         required: true,
@@ -29,13 +29,4 @@ export class AuthCredentialsDto {
         { message: 'mật khẩu quá yếu' }
     )
     password: string;
-
-    @ApiProperty({
-        description: 'nhập email',
-        required: true,
-        type: String
-    })
-    @IsString()
-    @IsEmail()
-    email: string;
 }

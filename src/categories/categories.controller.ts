@@ -1,5 +1,8 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Patch, Post, Put } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Logger, Param, ParseIntPipe, Patch, Post, Put, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/auth/entities/user.entity';
+import { GetUser } from 'src/auth/jwt/get-user.decorater';
 import { CategoryType, IsPublic } from 'src/common/enum/Identifier.enum';
 import { CategoryTypevalidationPipe } from 'src/common/pipes/category-type-validation.pipe';
 import { IspublicValidationPipe } from 'src/common/pipes/ispublic-validation.pipe';
@@ -56,30 +59,38 @@ export class CategoriesController {
         return this.categoryService.getParentTree(id);
     }
 
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
     @Post()
     createCategory(@Body() createCategoryDto: CreateCategoryDto,
         @Body('public', IspublicValidationPipe) isPublic: IsPublic,
-        @Body('typecode', CategoryTypevalidationPipe) typeCode: CategoryType): Promise<Category> {
+        @Body('typecode', CategoryTypevalidationPipe) typeCode: CategoryType,
+        @GetUser() user: User): Promise<Category> {
 
         this.logger.verbose(`danh sách dto ${JSON.stringify(createCategoryDto)}`)
-        return this.categoryService.createCategory(createCategoryDto, isPublic, typeCode);
+        return this.categoryService.createCategory(createCategoryDto, isPublic, typeCode, user);
 
     }
 
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
     @Put('/:id')
     updateCategory(@Param('id', ParseIntPipe) id: number,
         @Body() createCategoryDto: CreateCategoryDto,
         @Body('public', IspublicValidationPipe) isPublic: IsPublic,
-        @Body('typecode', CategoryTypevalidationPipe) typeCode: CategoryType): Promise<Category> {
+        @Body('typecode', CategoryTypevalidationPipe) typeCode: CategoryType,
+        @GetUser() user: User): Promise<Category> {
 
         if (id === createCategoryDto.parentId) {
             throw new HttpException(`id ${id} bị trùng với cha parentId ${createCategoryDto.parentId}`, HttpStatus.EXPECTATION_FAILED);
         }
         //this.logger.verbose(`Update theo id ${id} với danh sách dto ${JSON.stringify(createCategoryDto)}`)
-        return this.categoryService.updateCategory(id, createCategoryDto, isPublic, typeCode);
+        return this.categoryService.updateCategory(id, createCategoryDto, isPublic, typeCode, user);
     }
 
     @ApiOperation({ description: 'Chỉ xóa được phần tử đó khi phần từ đó không có con' })
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
     @Delete('/:id')
     deleteCategory(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.categoryService.deleteCategory(id);

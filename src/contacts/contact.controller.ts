@@ -5,11 +5,11 @@ import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { PaginatedContactsResultDto } from './dto/paginated-contacts-result.dto';
 import { PaginationDto } from './dto/pagination.dto';
-import { HttpExceptionsFilter } from 'src/common/filters/http-exception.filter';
+
 
 @ApiTags("Contacts")
 @Controller('contacts')
-// @UseFilters(HttpExceptionsFilter)
+
 export class ContactController {
     private logger = new Logger('TasksController');
     constructor(private contactService: ContactService) { }

@@ -7,34 +7,34 @@ import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "t
 export class Product extends BaseEntity {
 
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @Column({ length: 256 })
-    productName: string
+    productName: string;
 
     @Column({ length: 50 })
-    productCode: string
+    productCode: string;
 
     @Column()
-    price: number
+    price: number;
 
     @Column({ type: "int" })
-    quantity: number
+    quantity: number;
 
-    @ManyToOne(type => Category, category => category.products, { eager: false })
-    category: Category
-
-    @Column()
-    categoryId: number
+    @ManyToOne(() => Category, category => category.products, { eager: false })
+    category: Category;
 
     @Column()
-    isPublished: IsPublic
+    categoryId: number;
 
     @Column()
-    userIdCreate: number
+    isPublished: IsPublic;
+
+    @Column()
+    userIdCreate: number;
 
     @Column()
     @IsDate()
-    createDate: Date
+    createDate: Date;
 
 }

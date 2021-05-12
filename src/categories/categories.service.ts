@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/entities/user.entity';
 import { CategoryType, IsPublic } from 'src/common/enum/Identifier.enum';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { Category } from './entities/category.entity';
@@ -39,12 +40,12 @@ export class CategoriesService {
     async getParentTree(id: number): Promise<Category> {
         return await this.categoryRepository.getParentTree(id);
     }
-    async createCategory(createCategoryDto: CreateCategoryDto, isPublic: IsPublic, typeCode: CategoryType): Promise<Category> {
-        return await this.categoryRepository.createCategory(createCategoryDto, isPublic, typeCode);
+    async createCategory(createCategoryDto: CreateCategoryDto, isPublic: IsPublic, typeCode: CategoryType, user: User): Promise<Category> {
+        return await this.categoryRepository.createCategory(createCategoryDto, isPublic, typeCode, user);
     }
 
-    async updateCategory(id: number, createCategoryDto: CreateCategoryDto, isPublic: IsPublic, typeCode: CategoryType): Promise<Category> {
-        return await this.categoryRepository.updateCategory(id, createCategoryDto, isPublic, typeCode);
+    async updateCategory(id: number, createCategoryDto: CreateCategoryDto, isPublic: IsPublic, typeCode: CategoryType, user: User): Promise<Category> {
+        return await this.categoryRepository.updateCategory(id, createCategoryDto, isPublic, typeCode, user);
     }
 
     async deleteCategory(id: number): Promise<void> {

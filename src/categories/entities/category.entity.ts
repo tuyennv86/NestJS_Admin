@@ -45,6 +45,6 @@ export class Category extends BaseEntity {
     @IsDate()
     createDate: Date;
 
-    @OneToMany(type => Product, product => product.category, { eager: false })
+    @OneToMany(() => Product, product => product.category, { eager: false })
     products: Product[]
 }

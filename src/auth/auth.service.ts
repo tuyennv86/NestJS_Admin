@@ -4,6 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt/jwt-payload-interface';
+import { AuthsigninDto } from './dto/auth-signin.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -13,13 +15,17 @@ export class AuthService {
         private jwtService: JwtService
     ) { }
 
+    async getAllUser(): Promise<User[]> {
+        return this.userRepository.find();
+    }
+
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
         return this.userRepository.signUp(authCredentialsDto);
     }
 
-    async signIn(authCredentialsDto: AuthCredentialsDto): Promise<{ accessToken: string }> {
+    async signIn(uuthsigninDto: AuthsigninDto): Promise<{ accessToken: string }> {
 
-        const username = await this.userRepository.validateUserPassword(authCredentialsDto);
+        const username = await this.userRepository.validateUserPassword(uuthsigninDto);
         if (!username) {
             throw new UnauthorizedException('Thông tin không hợp lệ');
         }

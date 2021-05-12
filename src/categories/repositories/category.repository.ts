@@ -3,11 +3,12 @@ import { CategoryType, IsPublic } from "../../common/enum/Identifier.enum";
 import { EntityRepository, TreeRepository } from "typeorm"
 import { CreateCategoryDto } from "../dto/create-category.dto"
 import { Category } from "../entities/category.entity"
+import { User } from "src/auth/entities/user.entity";
 
 @EntityRepository(Category)
 export class CategoryRepository extends TreeRepository<Category> {
 
-    async createCategory(createCategoryDto: CreateCategoryDto, isPublic: IsPublic, categoryType: CategoryType): Promise<Category> {
+    async createCategory(createCategoryDto: CreateCategoryDto, isPublic: IsPublic, categoryType: CategoryType, user: User): Promise<Category> {
         const categoryParent = await this.findOne(createCategoryDto.parentId);
         const category = new Category();
         category.name = createCategoryDto.name;
@@ -16,7 +17,7 @@ export class CategoryRepository extends TreeRepository<Category> {
         category.typeCode = categoryType;
         category.isPublished = isPublic;
         category.order = createCategoryDto.order;
-        category.userIdCreate = createCategoryDto.userIdCreate;
+        category.userIdCreate = user.id;
         category.createDate = createCategoryDto.createDate;
         if (categoryParent) {
             category.parent = categoryParent;
@@ -25,7 +26,7 @@ export class CategoryRepository extends TreeRepository<Category> {
         return category;
     }
 
-    async updateCategory(id: number, createCategoryDto: CreateCategoryDto, isPublic: IsPublic, categoryType: CategoryType): Promise<Category> {
+    async updateCategory(id: number, createCategoryDto: CreateCategoryDto, isPublic: IsPublic, categoryType: CategoryType, user: User): Promise<Category> {
 
         const category = await this.findOne(id);
         const categoryParent = await this.findOne(createCategoryDto.parentId);
@@ -43,7 +44,7 @@ export class CategoryRepository extends TreeRepository<Category> {
         category.typeCode = categoryType;
         category.isPublished = isPublic
         category.order = createCategoryDto.order;
-        category.userIdCreate = createCategoryDto.userIdCreate;
+        category.userIdCreate = user.id;
         category.createDate = createCategoryDto.createDate;
         if (categoryParent) {
             category.parent = categoryParent;
