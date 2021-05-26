@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, MinLength, MaxLength, Matches, IsEmail } from "class-validator";
+import { IsString, MinLength, MaxLength, Matches } from "class-validator";
 
 export class AuthsigninDto {
     @ApiProperty({
@@ -24,9 +24,6 @@ export class AuthsigninDto {
     @IsString()
     @MinLength(8)
     @MaxLength(20)
-    @Matches(
-        /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
-        { message: 'mật khẩu quá yếu' }
-    )
+    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, { message: 'Mật khẩu phải có chữ hoa chữ thường số và ký tự đặc biệt' })
     password: string;
 }

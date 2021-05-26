@@ -10,6 +10,9 @@ export class User extends BaseEntity {
     id: number;
 
     @Column()
+    fullname: string;
+
+    @Column()
     username: string;
 
     @Column()
@@ -18,6 +21,12 @@ export class User extends BaseEntity {
     @Column()
     @IsEmail()
     email: string;
+
+    @Column()
+    imageUrl: string;
+
+    @Column()
+    phone: string;
 
     @Column()
     satl: string;

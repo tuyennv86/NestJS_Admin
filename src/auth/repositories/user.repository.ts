@@ -9,11 +9,14 @@ import { AuthsigninDto } from "../dto/auth-signin.dto";
 export class UserRepository extends Repository<User>{
 
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-        const { username, password, email } = authCredentialsDto;
+        const { fullname, username, password, email, phone, imageUrl } = authCredentialsDto;
 
         const user = new User();
         user.username = username;
         user.email = email;
+        user.fullname = fullname;
+        user.phone = phone;
+        user.imageUrl = imageUrl;
         user.satl = await bcrypt.genSalt();
         user.password = await this.hashPassword(password, user.satl);
         console.log(user);
