@@ -1,3 +1,5 @@
+import { AuthChangpassDto } from './dto/auth-changpass.dto';
+import { AuthUpdateDto } from './dto/auth-update.dto';
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -27,13 +29,33 @@ export class AuthService {
         return user;
     }
 
+    async getById(id: number): Promise<User> {
+        const user = await this.userRepository.findOne(id);
+        if (!user) {
+            throw new NotFoundException(`Không tìm thấy id "${id}" của bạn`);
+        }
+        return user;
+    }
+    async update(authUpdateDto: AuthUpdateDto): Promise<User> {
+        const user = await this.getById(authUpdateDto.id);
+        user.fullname = authUpdateDto.fullname;
+        user.email = authUpdateDto.email;
+        user.phone = authUpdateDto.phone;
+        await user.save();
+        return user;
+    }
+
+    async changPass(authChangpassDto: AuthChangpassDto): Promise<void> {
+        return this.userRepository.changPass(authChangpassDto);
+    }
+
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
         return this.userRepository.signUp(authCredentialsDto);
     }
 
-    async signIn(uuthsigninDto: AuthsigninDto): Promise<{ accessToken: string, success: boolean }> {
+    async signIn(authsigninDto: AuthsigninDto): Promise<{ accessToken: string, success: boolean }> {
 
-        const username = await this.userRepository.validateUserPassword(uuthsigninDto);
+        const username = await this.userRepository.validateUserPassword(authsigninDto);
         if (!username) {
             throw new UnauthorizedException('User hoặc mật khẩu không đúng!');
         }

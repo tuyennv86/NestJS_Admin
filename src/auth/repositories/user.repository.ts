@@ -1,12 +1,28 @@
 import { Repository, EntityRepository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { AuthCredentialsDto } from "../dto/auth-credentials.dto";
-import { ConflictException, InternalServerErrorException } from "@nestjs/common";
+import { ConflictException, HttpException, HttpStatus, InternalServerErrorException } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
 import { AuthsigninDto } from "../dto/auth-signin.dto";
+import { AuthChangpassDto } from "../dto/auth-changpass.dto";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
+
+    async changPass(authChangpassDto: AuthChangpassDto): Promise<void> {
+        const { username, password, newPassword, confirmPassword } = authChangpassDto;
+        const user = await this.findOne({ username });
+        if (!user && !await user.validatePassword(password)) {
+            throw new HttpException('Mật khẩu không đúng', HttpStatus.NOT_MODIFIED);
+        }
+        if (newPassword !== confirmPassword) {
+            throw new HttpException('Mật khẩu mới không trùng nhau', HttpStatus.NOT_MODIFIED);
+        }
+        user.satl = await bcrypt.genSalt();
+        user.password = await this.hashPassword(newPassword, user.satl);
+
+        user.save();
+    }
 
     async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
         const { fullname, username, password, email, phone, imageUrl } = authCredentialsDto;
@@ -19,7 +35,7 @@ export class UserRepository extends Repository<User>{
         user.imageUrl = imageUrl;
         user.satl = await bcrypt.genSalt();
         user.password = await this.hashPassword(password, user.satl);
-        console.log(user);
+        //console.log(user);
 
         try {
             await user.save();
@@ -33,9 +49,9 @@ export class UserRepository extends Repository<User>{
 
     }
 
-    async validateUserPassword(uuthSigninDto: AuthsigninDto) {
+    async validateUserPassword(authSigninDto: AuthsigninDto) {
 
-        const { username, password } = uuthSigninDto;
+        const { username, password } = authSigninDto;
         const user = await this.findOne({ username });
         if (user && await user.validatePassword(password)) {
             return user.username;
