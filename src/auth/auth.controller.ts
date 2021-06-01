@@ -1,17 +1,24 @@
 import { AuthChangpassDto } from './dto/auth-changpass.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
-import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Req, Param, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Req, Query, UseInterceptors, UploadedFile, Param, ParseIntPipe, Res } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './entities/user.entity';
-// import { RolesGuard } from 'src/common/guards/roles.guard';
 import { AuthsigninDto } from './dto/auth-signin.dto';
+
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { FileUploadDto } from './dto/file-upload.dto';
+import { Helper } from '../utils/helper';
+
+
 
 @ApiTags("Authentication")
 @Controller('auth')
 export class AuthController {
+
     constructor(private authService: AuthService) { }
 
     @ApiBearerAuth()
@@ -38,12 +45,12 @@ export class AuthController {
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
     @Post('/changpass')
-    async changpass(authChangpassDto: AuthChangpassDto): Promise<void> {
+    async changpass(@Body(ValidationPipe) authChangpassDto: AuthChangpassDto): Promise<User> {
         return await this.authService.changPass(authChangpassDto);
     }
 
     @Post('/signup')
-    async signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<void> {
+    async signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<User> {
         return await this.authService.signUp(authCredentialsDto);
     }
 
@@ -58,4 +65,23 @@ export class AuthController {
     public async testAuth(@Req() req): Promise<User> {
         return req.user;
     }
+
+
+    @UseInterceptors(FileInterceptor('file'))
+    @ApiConsumes('multipart/form-data')
+    @ApiBody({
+        description: 'Upload file',
+        type: FileUploadDto,
+    })
+    @Post('/:id/avatar')
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: Helper.destinationPath,
+            filename: Helper.customFileName,
+        }),
+    }))
+    uploadAvatar(@Param('id', ParseIntPipe) id: number, @UploadedFile() file: Express.Multer.File): Promise<User> {
+        return this.authService.setAvatar(id, `${file.path}`);
+    }
+
 }

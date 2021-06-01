@@ -45,11 +45,11 @@ export class AuthService {
         return user;
     }
 
-    async changPass(authChangpassDto: AuthChangpassDto): Promise<void> {
+    async changPass(authChangpassDto: AuthChangpassDto): Promise<User> {
         return this.userRepository.changPass(authChangpassDto);
     }
 
-    async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
+    async signUp(authCredentialsDto: AuthCredentialsDto): Promise<User> {
         return this.userRepository.signUp(authCredentialsDto);
     }
 
@@ -64,5 +64,12 @@ export class AuthService {
         const payload: JwtPayload = { username };
         const accessToken = await this.jwtService.sign(payload);
         return { accessToken, success };
+    }
+
+    public async setAvatar(id: number, avatarUrl: string): Promise<User> {
+        const user = await this.getById(id);
+        user.imageUrl = avatarUrl;
+        await user.save();
+        return user;
     }
 }

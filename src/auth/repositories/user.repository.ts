@@ -9,22 +9,26 @@ import { AuthChangpassDto } from "../dto/auth-changpass.dto";
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
 
-    async changPass(authChangpassDto: AuthChangpassDto): Promise<void> {
+    async changPass(authChangpassDto: AuthChangpassDto): Promise<User> {
         const { username, password, newPassword, confirmPassword } = authChangpassDto;
         const user = await this.findOne({ username });
-        if (!user && !await user.validatePassword(password)) {
-            throw new HttpException('Mật khẩu không đúng', HttpStatus.NOT_MODIFIED);
+        if (!user || !await user.validatePassword(password)) {
+            // console.log('mat khau ko dung');
+            throw new HttpException('Mật khẩu không đúng', HttpStatus.CONFLICT);
         }
         if (newPassword !== confirmPassword) {
-            throw new HttpException('Mật khẩu mới không trùng nhau', HttpStatus.NOT_MODIFIED);
+            //console.log('mật khau khong trung nhau');
+            throw new HttpException('Mật khẩu mới không trùng nhau', HttpStatus.CONFLICT);
         }
         user.satl = await bcrypt.genSalt();
         user.password = await this.hashPassword(newPassword, user.satl);
+        console.log(authChangpassDto);
 
-        user.save();
+        await user.save();
+        return user;
     }
 
-    async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
+    async signUp(authCredentialsDto: AuthCredentialsDto): Promise<User> {
         const { fullname, username, password, email, phone, imageUrl } = authCredentialsDto;
 
         const user = new User();
@@ -39,6 +43,7 @@ export class UserRepository extends Repository<User>{
 
         try {
             await user.save();
+            return user;
         } catch (error) {
             if (error.code === '23505') {
                 throw new ConflictException('Username đã tồn tại');
