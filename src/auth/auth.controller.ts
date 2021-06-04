@@ -12,13 +12,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { Helper } from '../utils/helper';
-
-
+import { multerOptions } from '../config/multer.config';
 
 @ApiTags("Authentication")
 @Controller('auth')
 export class AuthController {
-
+    SERVER_URL = "http://localhost:3000/auth/";
     constructor(private authService: AuthService) { }
 
     @ApiBearerAuth()
@@ -67,13 +66,14 @@ export class AuthController {
     }
 
 
-    @UseInterceptors(FileInterceptor('file'))
+    @Post('/:id/avatar')
+    // @UseInterceptors(FileInterceptor('file', multerOptions))
     @ApiConsumes('multipart/form-data')
     @ApiBody({
         description: 'Upload file',
         type: FileUploadDto,
     })
-    @Post('/:id/avatar')
+
     @UseInterceptors(FileInterceptor('file', {
         storage: diskStorage({
             destination: Helper.destinationPath,
@@ -81,7 +81,11 @@ export class AuthController {
         }),
     }))
     uploadAvatar(@Param('id', ParseIntPipe) id: number, @UploadedFile() file: Express.Multer.File): Promise<User> {
-        return this.authService.setAvatar(id, `${file.path}`);
+        return this.authService.setAvatar(id, `${this.SERVER_URL}${file.path}`);
     }
 
+    @Get('/avatars/:year/:month/:fileId')
+    async serveAvatar(@Param('fileId') fileId, @Param('year') year, @Param('month') month, @Res() res): Promise<any> {
+        res.sendFile(fileId, { root: 'avatars/' + year + "/" + month });
+    }
 }

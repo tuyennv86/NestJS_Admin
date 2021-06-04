@@ -1,6 +1,10 @@
+import { existsSync, mkdirSync } from 'fs';
+
 export class Helper {
+
     static customFileName(req, file, cb) {
         // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+
         const uniqueSuffix = Date.now();
         let fileExtension = "";
         if (file.mimetype.indexOf("jpeg") > -1) {
@@ -16,6 +20,19 @@ export class Helper {
     }
 
     static destinationPath(req, file, cb) {
-        cb(null, './avatars/')
+        const now = new Date();
+        const uploadPath = "./avatars/";
+        const uploadPath1 = "./avatars/" + now.getFullYear();
+        const uploadPath2 = uploadPath1 + "/" + now.getMonth();
+        if (!existsSync(uploadPath)) {
+            mkdirSync(uploadPath);
+        }
+        if (!existsSync(uploadPath1)) {
+            mkdirSync(uploadPath1);
+        }
+        if (!existsSync(uploadPath2)) {
+            mkdirSync(uploadPath2);
+        }
+        cb(null, uploadPath2)
     }
 }
