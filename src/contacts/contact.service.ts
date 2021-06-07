@@ -5,7 +5,7 @@ import { Contact } from './entities/contact.entity';
 import { ContactRepository } from './repositories/contact.repository';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { PaginatedContactsResultDto } from './dto/paginated-contacts-result.dto';
-import { PaginationDto } from './dto/pagination.dto';
+import { PaginationDto } from '../utils/pagination.dto';
 
 @Injectable()
 export class ContactService {

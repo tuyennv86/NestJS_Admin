@@ -3,7 +3,7 @@ import { EntityRepository, Repository } from "typeorm";
 import { Contact } from "../entities/contact.entity";
 import { CreateContactDto } from "../dto/create-contact.dto";
 import { PaginatedContactsResultDto } from "../dto/paginated-contacts-result.dto";
-import { PaginationDto } from "../dto/pagination.dto";
+import { PaginationDto } from "../../utils/pagination.dto";
 
 @EntityRepository(Contact)
 export class ContactRepository extends Repository<Contact>{

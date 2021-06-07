@@ -5,6 +5,8 @@ import { ConflictException, HttpException, HttpStatus, InternalServerErrorExcept
 import * as bcrypt from 'bcrypt';
 import { AuthsigninDto } from "../dto/auth-signin.dto";
 import { AuthChangpassDto } from "../dto/auth-changpass.dto";
+import { PaginationDto } from "../../utils/pagination.dto";
+import { PaginatedUsersResultDto } from "../dto/paginated-users-result.dto";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
@@ -68,5 +70,22 @@ export class UserRepository extends Repository<User>{
 
     private async hashPassword(password: string, satl: string): Promise<string> {
         return bcrypt.hash(password, satl);
+    }
+
+    // User API
+    public async getUsersByPaging(paginationDto: PaginationDto): Promise<PaginatedUsersResultDto> {
+        const skippedItems = (paginationDto.page - 1) * paginationDto.limit;
+        const totalCount = await this.count();
+        const users = await this.createQueryBuilder('user')
+            .orderBy('id', "DESC")
+            .offset(skippedItems)
+            .limit(paginationDto.limit)
+            .getMany();
+        return {
+            totalCount,
+            page: paginationDto.page,
+            limit: paginationDto.limit,
+            data: users
+        }
     }
 }

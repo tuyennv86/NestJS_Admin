@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Post, Put, Query, UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Contact } from './entities/contact.entity';
 import { ContactService } from './contact.service';
 import { CreateContactDto } from './dto/create-contact.dto';
 import { PaginatedContactsResultDto } from './dto/paginated-contacts-result.dto';
-import { PaginationDto } from './dto/pagination.dto';
+import { PaginationDto } from '../utils/pagination.dto';
 
 
 @ApiTags("Contacts")
@@ -20,6 +20,8 @@ export class ContactController {
     }
 
     @Get('/page')
+    @ApiQuery({ name: "page", required: false })
+    @ApiQuery({ name: "limit", required: false })
     getPaging(@Query() paginationDto: PaginationDto): Promise<PaginatedContactsResultDto> {
 
         paginationDto.page = Number(paginationDto.page > 0 ? paginationDto.page : 1);

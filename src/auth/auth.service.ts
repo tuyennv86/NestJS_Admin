@@ -8,6 +8,9 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt/jwt-payload-interface';
 import { AuthsigninDto } from './dto/auth-signin.dto';
 import { User } from './entities/user.entity';
+import { unlinkSync } from 'fs';
+import { PaginationDto } from '../utils/pagination.dto';
+import { PaginatedUsersResultDto } from './dto/paginated-users-result.dto';
 
 @Injectable()
 export class AuthService {
@@ -68,8 +71,13 @@ export class AuthService {
 
     public async setAvatar(id: number, avatarUrl: string): Promise<User> {
         const user = await this.getById(id);
+        unlinkSync("./" + user.imageUrl.substring(27));// chu y khi up lên server thi đổi lại số thứ tự
         user.imageUrl = avatarUrl;
         await user.save();
         return user;
+    }
+
+    public async getUsersByPaging(paginationDto: PaginationDto): Promise<PaginatedUsersResultDto> {
+        return await this.userRepository.getUsersByPaging(paginationDto);
     }
 }
