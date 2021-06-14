@@ -14,12 +14,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { Helper } from '../utils/helper';
+import * as config from 'config';
 
+const localurl = config.get('localurl');
 
 @ApiTags("Authentication")
 @Controller('auth')
 export class AuthController {
-    SERVER_URL = "http://localhost:3000/auth/";
     constructor(private authService: AuthService) { }
 
     @ApiBearerAuth()
@@ -85,7 +86,7 @@ export class AuthController {
         }),
     }))
     uploadAvatar(@Param('id', ParseIntPipe) id: number, @UploadedFile() file): Promise<User> {
-        return this.authService.setAvatar(id, `${this.SERVER_URL}${file.path}`);
+        return this.authService.setAvatar(id, `${localurl.local}${file.path}`);
     }
 
     // @ApiBearerAuth()

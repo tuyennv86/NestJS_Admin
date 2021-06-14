@@ -1,3 +1,4 @@
+import { Length } from 'class-validator';
 import { AuthChangpassDto } from './dto/auth-changpass.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
@@ -8,12 +9,16 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt/jwt-payload-interface';
 import { AuthsigninDto } from './dto/auth-signin.dto';
 import { User } from './entities/user.entity';
-import { unlinkSync } from 'fs';
+import { unlinkSync, existsSync } from 'fs';
 import { PaginationDto } from '../utils/pagination.dto';
 import { PaginatedUsersResultDto } from './dto/paginated-users-result.dto';
+import * as config from 'config';
+
+const localurl = config.get('localurl');
 
 @Injectable()
 export class AuthService {
+
     constructor(
         @InjectRepository(UserRepository)
         private userRepository: UserRepository,
@@ -71,7 +76,15 @@ export class AuthService {
 
     public async setAvatar(id: number, avatarUrl: string): Promise<User> {
         const user = await this.getById(id);
-        unlinkSync("./" + user.imageUrl.substring(27));// chu y khi up lên server thi đổi lại số thứ tự
+        try {
+            if (existsSync("./" + user.imageUrl.substring(localurl.local.length))) {
+                //file exists
+                unlinkSync("./" + user.imageUrl.substring(localurl.local.length));
+            }
+        } catch (err) {
+            console.error(err)
+        }
+
         user.imageUrl = avatarUrl;
         await user.save();
         return user;
