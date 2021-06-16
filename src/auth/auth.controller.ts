@@ -2,7 +2,7 @@ import { PaginationDto } from './../utils/pagination.dto';
 import { PaginatedUsersResultDto } from './dto/paginated-users-result.dto';
 import { AuthChangpassDto } from './dto/auth-changpass.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
-import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Query, UseInterceptors, UploadedFile, Param, ParseIntPipe, Res } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Query, UseInterceptors, UploadedFile, Param, ParseIntPipe, Res, Delete } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -40,6 +40,13 @@ export class AuthController {
 
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
+    @Get('/:id')
+    getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
+        return this.authService.getById(id);
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
     @Post('/update')
     async update(@Body() authUpdateDto: AuthUpdateDto): Promise<User> {
         return await this.authService.update(authUpdateDto);
@@ -62,12 +69,12 @@ export class AuthController {
         return await this.authService.signIn(authsigninDto);
     }
 
-    // @ApiBearerAuth()
-    // @UseGuards(AuthGuard())
-    // @Get('/profile')
-    // public async testAuth(@Req() req): Promise<User> {
-    //     return req.user;
-    // }
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
+    @Delete('/:id')
+    deleteContact(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        return this.authService.deleteById(id);
+    }
 
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
@@ -89,8 +96,6 @@ export class AuthController {
         return this.authService.setAvatar(id, `${localurl.local}${file.path}`);
     }
 
-    // @ApiBearerAuth()
-    // @UseGuards(AuthGuard())
     @Get('/avatars/:year/:month/:fileId')
     async serveAvatar(@Param('fileId') fileId, @Param('year') year, @Param('month') month, @Res() res): Promise<any> {
         res.sendFile(fileId, { root: 'avatars/' + year + "/" + month });

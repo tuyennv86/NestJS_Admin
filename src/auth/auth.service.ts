@@ -44,6 +44,23 @@ export class AuthService {
         }
         return user;
     }
+
+    async deleteById(id: number): Promise<void> {
+        const user = await this.getById(id);
+        const result = await this.userRepository.delete(id);
+        try {
+            if (existsSync("./" + user.imageUrl.substring(localurl.local.length))) {
+                unlinkSync("./" + user.imageUrl.substring(localurl.local.length));
+            }
+        } catch (err) {
+            console.error(err)
+        }
+
+        if (result.affected === 0) {
+            throw new NotFoundException(`Không tìm thấy ${id} của bạn`);
+        }
+    }
+
     async update(authUpdateDto: AuthUpdateDto): Promise<User> {
         const user = await this.getById(authUpdateDto.id);
         user.fullname = authUpdateDto.fullname;
