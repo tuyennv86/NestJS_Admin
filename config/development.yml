@@ -7,4 +7,4 @@ jwt:
     secret: 'topSecret51'
 
 localurl:
-    local: 'http://localhost:3000/auth/'   
+    local: 'http://localhost:3000/'   

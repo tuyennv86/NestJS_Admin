@@ -1,3 +1,4 @@
+import { AppController } from './app.controller';
 import { ProductModule } from './products/product.module';
 import { RedisCacheModule } from './cache/redis-cache.module';
 import { CategoriesModule } from './categories/categories.module';
@@ -19,6 +20,11 @@ import { ContactController } from './contacts/contact.controller';
     TasksModule,
     AuthModule,
     TypeOrmModule.forRoot(typeOrmConfig)
+  ],
+  controllers: [
+    AppController
+  ],
+  providers: [
   ],
 })
 export class AppModule {

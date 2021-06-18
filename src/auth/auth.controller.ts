@@ -1,8 +1,9 @@
+import { AuthUpdateUserDto } from './dto/auth-update-user.dto';
 import { PaginationDto } from './../utils/pagination.dto';
 import { PaginatedUsersResultDto } from './dto/paginated-users-result.dto';
 import { AuthChangpassDto } from './dto/auth-changpass.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
-import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Query, UseInterceptors, UploadedFile, Param, ParseIntPipe, Res, Delete } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Query, UseInterceptors, UploadedFile, Param, ParseIntPipe, Res, Delete, Put, UsePipes } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
@@ -40,7 +41,7 @@ export class AuthController {
 
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
-    @Get('/:id')
+    @Get('/user/:id')
     getUserById(@Param('id', ParseIntPipe) id: number): Promise<User> {
         return this.authService.getById(id);
     }
@@ -96,11 +97,6 @@ export class AuthController {
         return this.authService.setAvatar(id, `${localurl.local}${file.path}`);
     }
 
-    @Get('/avatars/:year/:month/:fileId')
-    async serveAvatar(@Param('fileId') fileId, @Param('year') year, @Param('month') month, @Res() res): Promise<any> {
-        res.sendFile(fileId, { root: 'avatars/' + year + "/" + month });
-    }
-
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
     @Get('/list')
@@ -113,5 +109,28 @@ export class AuthController {
         return this.authService.getUsersByPaging({
             ...paginationDto, limit: paginationDto.limit
         });
+    }
+
+
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
+    @Put('/:id')
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: Helper.destinationPath,
+            filename: Helper.customFileName,
+        }),
+    }))
+    @UsePipes(ValidationPipe)
+    updateUser(@Param('id', ParseIntPipe) id: number, @UploadedFile() file, @Body() authUpdateUserDto: AuthUpdateUserDto): Promise<User> {
+        return this.authService.updateUser(id, `${localurl.local}${file.path}`, authUpdateUserDto);
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
+    @Put('/NoImage/:id')
+    @UsePipes(ValidationPipe)
+    updateUserNoImage(@Param('id', ParseIntPipe) id: number, @Body() authUpdateUserDto: AuthUpdateUserDto): Promise<User> {
+        return this.authService.updateUser(id, "", authUpdateUserDto);
     }
 }

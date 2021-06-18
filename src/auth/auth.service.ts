@@ -12,6 +12,7 @@ import { unlinkSync, existsSync } from 'fs';
 import { PaginationDto } from '../utils/pagination.dto';
 import { PaginatedUsersResultDto } from './dto/paginated-users-result.dto';
 import * as config from 'config';
+import { AuthUpdateUserDto } from './dto/auth-update-user.dto';
 
 const localurl = config.get('localurl');
 
@@ -104,6 +105,27 @@ export class AuthService {
         user.imageUrl = avatarUrl;
         await user.save();
         return user;
+    }
+
+    public async updateUser(id: number, avataUrl: string, authUpdateUserDto: AuthUpdateUserDto): Promise<User> {
+        const user = await this.getById(id);
+        debugger;
+        user.fullname = authUpdateUserDto.fullname;
+        user.email = authUpdateUserDto.email;
+        user.phone = authUpdateUserDto.phone;
+        if (avataUrl.length > 0) {
+            try {
+                if (existsSync("./" + user.imageUrl.substring(localurl.local.length))) {
+                    unlinkSync("./" + user.imageUrl.substring(localurl.local.length));
+                }
+            } catch (err) {
+                console.error(err)
+            }
+            user.imageUrl = avataUrl;
+        }
+        await user.save();
+        return user;
+
     }
 
     public async getUsersByPaging(paginationDto: PaginationDto): Promise<PaginatedUsersResultDto> {
