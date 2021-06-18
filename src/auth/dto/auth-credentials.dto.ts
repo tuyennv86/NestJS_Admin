@@ -60,10 +60,10 @@ export class AuthCredentialsDto {
     @IsString()
     phone: string;
 
-    @ApiProperty({
-        description: 'Đường dẫn ảnh đại diện',
-        type: String
-    })
-    @IsString()
-    imageUrl: string;
+    // @ApiProperty({
+    //     description: 'Đường dẫn ảnh đại diện',
+    //     type: String
+    // })
+    // @IsString()
+    // imageUrl: string;
 }

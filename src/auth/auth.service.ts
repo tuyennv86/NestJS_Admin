@@ -74,8 +74,8 @@ export class AuthService {
         return this.userRepository.changPass(authChangpassDto);
     }
 
-    async signUp(authCredentialsDto: AuthCredentialsDto): Promise<User> {
-        return this.userRepository.signUp(authCredentialsDto);
+    async signUp(avataUrl: string, authCredentialsDto: AuthCredentialsDto): Promise<User> {
+        return this.userRepository.signUp(avataUrl, authCredentialsDto);
     }
 
     async signIn(authsigninDto: AuthsigninDto): Promise<{ accessToken: string, success: boolean }> {

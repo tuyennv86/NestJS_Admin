@@ -60,11 +60,26 @@ export class AuthController {
         return await this.authService.changPass(authChangpassDto);
     }
 
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
     @Post('/signup')
     async signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<User> {
-        return await this.authService.signUp(authCredentialsDto);
+        return await this.authService.signUp("", authCredentialsDto);
     }
 
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard())
+    @UseInterceptors(FileInterceptor('file', {
+        storage: diskStorage({
+            destination: Helper.destinationPath,
+            filename: Helper.customFileName,
+        }),
+    }))
+    @UsePipes(ValidationPipe)
+    @Post('/signupimg')
+    async signUpImg(@UploadedFile() file, @Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<User> {
+        return await this.authService.signUp(`${localurl.local}${file.path}`, authCredentialsDto);
+    }
     @Post('/signin')
     async singIn(@Body(ValidationPipe) authsigninDto: AuthsigninDto): Promise<{ accessToken: string }> {
         return await this.authService.signIn(authsigninDto);
