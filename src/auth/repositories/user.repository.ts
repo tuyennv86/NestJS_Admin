@@ -41,8 +41,6 @@ export class UserRepository extends Repository<User>{
         user.imageUrl = avataUrl;
         user.satl = await bcrypt.genSalt();
         user.password = await this.hashPassword(password, user.satl);
-        //console.log(user);
-
         try {
             await user.save();
             return user;
