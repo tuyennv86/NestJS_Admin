@@ -2,6 +2,7 @@ import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, Unique, OneToMany }
 import * as bcrypt from 'bcrypt';
 import { Task } from "../../tasks/entities/task.entity";
 import { IsEmail } from "class-validator";
+import { Role } from "../../roles/enum/role.enum";
 
 @Entity()
 @Unique(['username'])
@@ -27,6 +28,9 @@ export class User extends BaseEntity {
 
     @Column()
     phone: string;
+
+    @Column({ type: 'enum', enum: Role, default: Role.USER })
+    role: Role;
 
     @Column()
     satl: string;

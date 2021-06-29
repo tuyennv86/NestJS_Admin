@@ -3,7 +3,7 @@ import { PaginationDto } from './../utils/pagination.dto';
 import { PaginatedUsersResultDto } from './dto/paginated-users-result.dto';
 import { AuthChangpassDto } from './dto/auth-changpass.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
-import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Query, UseInterceptors, UploadedFile, Param, ParseIntPipe, Res, Delete, Put, UsePipes } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, UseGuards, Get, Query, UseInterceptors, UploadedFile, Param, ParseIntPipe, Delete, Put, UsePipes } from '@nestjs/common';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
