@@ -1,3 +1,4 @@
+import { UserRole } from './../enum/user-role.enum';
 import { Repository, EntityRepository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { AuthCredentialsDto } from "../dto/auth-credentials.dto";
@@ -30,7 +31,7 @@ export class UserRepository extends Repository<User>{
         return user;
     }
 
-    async signUp(avataUrl: string, authCredentialsDto: AuthCredentialsDto): Promise<User> {
+    async signUp(avataUrl: string, authCredentialsDto: AuthCredentialsDto, userRole: UserRole): Promise<User> {
         const { fullname, username, password, email, phone } = authCredentialsDto;
 
         const user = new User();
@@ -39,6 +40,7 @@ export class UserRepository extends Repository<User>{
         user.fullname = fullname;
         user.phone = phone;
         user.imageUrl = avataUrl;
+        user.role = userRole;
         user.satl = await bcrypt.genSalt();
         user.password = await this.hashPassword(password, user.satl);
         try {

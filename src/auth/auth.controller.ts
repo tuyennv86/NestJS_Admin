@@ -1,3 +1,4 @@
+import { UserRole } from './enum/user-role.enum';
 import { AuthUpdateUserDto } from './dto/auth-update-user.dto';
 import { PaginationDto } from './../utils/pagination.dto';
 import { PaginatedUsersResultDto } from './dto/paginated-users-result.dto';
@@ -16,6 +17,7 @@ import { diskStorage } from 'multer';
 import { FileUploadDto } from './dto/file-upload.dto';
 import { Helper } from '../utils/helper';
 import * as config from 'config';
+import { UserRoleValidationPipe } from './pipes/user-role-validation.pipe';
 
 const localurl = config.get('localurl');
 
@@ -63,8 +65,8 @@ export class AuthController {
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
     @Post('/signup')
-    async signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<User> {
-        return await this.authService.signUp("", authCredentialsDto);
+    async signUp(@Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto, @Body('role', UserRoleValidationPipe) userRole: UserRole): Promise<User> {
+        return await this.authService.signUp("", authCredentialsDto, userRole);
     }
 
     @ApiBearerAuth()
@@ -77,8 +79,8 @@ export class AuthController {
     }))
     @UsePipes(ValidationPipe)
     @Post('/signupimg')
-    async signUpImg(@UploadedFile() file, @Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto): Promise<User> {
-        return await this.authService.signUp(`${localurl.local}${file.path}`, authCredentialsDto);
+    async signUpImg(@UploadedFile() file, @Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto, @Body('role', UserRoleValidationPipe) userRole: UserRole): Promise<User> {
+        return await this.authService.signUp(`${localurl.local}${file.path}`, authCredentialsDto, userRole);
     }
     @Post('/signin')
     async singIn(@Body(ValidationPipe) authsigninDto: AuthsigninDto): Promise<{ accessToken: string }> {
@@ -137,15 +139,15 @@ export class AuthController {
         }),
     }))
     @UsePipes(ValidationPipe)
-    updateUser(@Param('id', ParseIntPipe) id: number, @UploadedFile() file, @Body() authUpdateUserDto: AuthUpdateUserDto): Promise<User> {
-        return this.authService.updateUser(id, `${localurl.local}${file.path}`, authUpdateUserDto);
+    updateUser(@Param('id', ParseIntPipe) id: number, @UploadedFile() file, @Body() authUpdateUserDto: AuthUpdateUserDto, @Body('role', UserRoleValidationPipe) userRole: UserRole): Promise<User> {
+        return this.authService.updateUser(id, `${localurl.local}${file.path}`, authUpdateUserDto, userRole);
     }
 
     @ApiBearerAuth()
     @UseGuards(AuthGuard())
     @Put('/NoImage/:id')
     @UsePipes(ValidationPipe)
-    updateUserNoImage(@Param('id', ParseIntPipe) id: number, @Body() authUpdateUserDto: AuthUpdateUserDto): Promise<User> {
-        return this.authService.updateUser(id, "", authUpdateUserDto);
+    updateUserNoImage(@Param('id', ParseIntPipe) id: number, @Body() authUpdateUserDto: AuthUpdateUserDto, @Body('role', UserRoleValidationPipe) userRole: UserRole): Promise<User> {
+        return this.authService.updateUser(id, "", authUpdateUserDto, userRole);
     }
 }

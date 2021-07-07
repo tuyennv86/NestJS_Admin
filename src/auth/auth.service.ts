@@ -1,3 +1,4 @@
+import { UserRole } from './enum/user-role.enum';
 import { AuthChangpassDto } from './dto/auth-changpass.dto';
 import { AuthUpdateDto } from './dto/auth-update.dto';
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
@@ -74,8 +75,8 @@ export class AuthService {
         return this.userRepository.changPass(authChangpassDto);
     }
 
-    async signUp(avataUrl: string, authCredentialsDto: AuthCredentialsDto): Promise<User> {
-        return this.userRepository.signUp(avataUrl, authCredentialsDto);
+    async signUp(avataUrl: string, authCredentialsDto: AuthCredentialsDto, userRole: UserRole): Promise<User> {
+        return this.userRepository.signUp(avataUrl, authCredentialsDto, userRole);
     }
 
     async signIn(authsigninDto: AuthsigninDto): Promise<{ accessToken: string, success: boolean }> {
@@ -107,12 +108,12 @@ export class AuthService {
         return user;
     }
 
-    public async updateUser(id: number, avataUrl: string, authUpdateUserDto: AuthUpdateUserDto): Promise<User> {
+    public async updateUser(id: number, avataUrl: string, authUpdateUserDto: AuthUpdateUserDto, userRole: UserRole): Promise<User> {
         const user = await this.getById(id);
-        debugger;
         user.fullname = authUpdateUserDto.fullname;
         user.email = authUpdateUserDto.email;
         user.phone = authUpdateUserDto.phone;
+        user.role = userRole;
         if (avataUrl.length > 0) {
             try {
                 if (existsSync("./" + user.imageUrl.substring(localurl.local.length))) {

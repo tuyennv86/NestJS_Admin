@@ -83,6 +83,14 @@ export class CategoryRepository extends TreeRepository<Category> {
         return category;
     }
 
+    // async getChildrenByType(categoryType: CategoryType, parentCategory: Category): Promise<Category[]> {
+    //     const children = await this.createDescendantsQueryBuilder("category", "categoryClosure", parentCategory)
+    //         .andWhere("category.typeCode = " + categoryType)
+    //         .getMany();
+    //     // this.buildChildrenEntityTree()
+    //     return children;
+    // }
+
     async getChildrenNext(idParent: number): Promise<Category[]> {
         const parentCategory = await this.findOne(idParent);
         return await this.findDescendants(parentCategory);

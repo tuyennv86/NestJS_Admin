@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { ContactController } from './contacts/contact.controller';
 
+
 @Module({
   imports: [
     ProductModule,
@@ -19,7 +20,7 @@ import { ContactController } from './contacts/contact.controller';
     ContactModule,
     TasksModule,
     AuthModule,
-    TypeOrmModule.forRoot(typeOrmConfig)
+    TypeOrmModule.forRoot(typeOrmConfig),
   ],
   controllers: [
     AppController
